@@ -1,0 +1,30 @@
+name: Build ProjectShamsi
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Install WiX Toolset
+      run: choco install wixtoolset --yes
+
+    - name: Build Solution
+      run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
+
+    - name: Upload MSI artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ProjectShamsi-Installer
+        path: installer/ProjectShamsi.Setup/bin/Release/*.msi

@@ -1,0 +1,6 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 16
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "ProjectShamsi.Setup", "ProjectShamsi.Setup\ProjectShamsi.Setup.wixproj", "{6B0D56BA-4C79-4A5F-8899-4D933E7A2C43}"
+EndProject
+Global
+EndGlobal

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="ProjectShamsi" Language="1049" Version="1.0.0.0" Manufacturer="ShamsiSoft" UpgradeCode="PUT-GUID-HERE">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <MediaTemplate />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="ProjectShamsi" />
+      </Directory>
+    </Directory>
+    <Feature Id="ProductFeature" Title="ProjectShamsi" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Source="$(var.ProjectShamsi.TargetPath)" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <ComponentRef Id="MainExecutable" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>
