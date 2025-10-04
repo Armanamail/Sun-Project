@@ -12,13 +12,17 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # Updated to v4 for best practice
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
     - name: Install WiX Toolset
       run: choco install wixtoolset --yes
+
+    # This is the new, required step
+    - name: Restore NuGet packages
+      run: dotnet restore src/ProjectShamsi.sln
 
     - name: Build Solution
       run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
@@ -27,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ProjectShamsi-Installer
-        path: installer/ProjectShamsi.Setup/bin/Release/*.msi
+        path: src/ProjectShamsi.Setup/bin/Release/*.msi # Corrected the path to the MSI
