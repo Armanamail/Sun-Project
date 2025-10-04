@@ -33,11 +33,9 @@ jobs:
           [IO.Compression.ZipFile]::CreateFromDirectory('src/ProjectShamsi/bin/Release', 'artifact/ProjectShamsi-bin.zip')
 
       - name: Build MSI (WiX)
-        env:
-          WIX: 'C:\Program Files (x86)\WiX Toolset v3.11\bin'
         run: |
-          & "$env:WIX\candle.exe" -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release"
-          & "$env:WIX\light.exe" -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
+          & candle.exe -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release"
+          & light.exe -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
