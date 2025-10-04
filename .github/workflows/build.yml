@@ -1,37 +1,43 @@
-name: Build and Release MSI
+name: Build ProjectShamsi Installer
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.3.1
+    # نصب .NET Framework SDK برای بیلد Add-in
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.1.1
+    - name: Restore NuGet packages
+      run: nuget restore src/ProjectShamsi.sln
 
-      - name: Restore NuGet packages
-        run: nuget restore src/ProjectShamsi.sln
+    - name: Build Project
+      run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
 
-      - name: Build ProjectShamsi
-        run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
+    # نصب WiX Toolset
+    - name: Install WiX Toolset
+      run: choco install wixtoolset --version=3.14.1 -y
 
-      - name: Build Installer
-        run: |
-          mkdir artifact
-          candle.exe -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release\net48"
-          light.exe -out artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
+    # ساخت MSI با WiX
+    - name: Build MSI
+      run: |
+        mkdir artifact
+        candle.exe -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release\net48"
+        light.exe -ext WixUIExtension -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
 
-      - name: Upload MSI Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ProjectShamsi-Installer
-          path: artifact/ProjectShamsi.msi
+    # آپلود فایل MSI نهایی
+    - name: Upload MSI Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ProjectShamsi-Installer
+        path: artifact/ProjectShamsi.msi
