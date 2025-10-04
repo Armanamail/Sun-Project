@@ -27,6 +27,10 @@ jobs:
     - name: Build Solution
       run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
 
+    # This is the new diagnostic step
+     - name: List all files after build
+       run: ls -R
+
     - name: Upload MSI artifact
       uses: actions/upload-artifact@v4
       with:
