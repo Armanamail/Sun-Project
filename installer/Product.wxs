@@ -1,49 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="ProjectShamsi" Language="1033" Version="1.0.0.0" Manufacturer="Armana" UpgradeCode="{B0E4D2A7-CA6A-4A93-B9D8-AB67F8F05690}">
-    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Comments="ProjectShamsi Installer"/>
-    <MediaTemplate EmbedCab="yes"/>
 
+  <Product Id="*" Name="Project Shamsi" Language="1065" Version="1.0.0.0" Manufacturer="YourCompany" UpgradeCode="12345678-1234-1234-1234-123456789abc">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="نسخه جدیدتر برنامه از قبل نصب شده است." />
+    <MediaTemplate />
+
+    <!-- دایرکتوری نصب -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLFOLDER" Name="ProjectShamsi" />
+        <Directory Id="INSTALLFOLDER" Name="ProjectShamsi">
+          <Component Id="MainExecutable" Guid="11111111-2222-3333-4444-555555555555">
+            <File Id="ProjectShamsi.AddIn.dll" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.AddIn.dll" />
+            <File Id="ProjectShamsi.Hook.dll" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.Hook.dll" />
+            <File Id="ProjectShamsi.vsto" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.vsto" />
+            <File Id="ConfigFile" Source="$(var.ProjectShamsi.TargetDir)\config.json" />
+          </Component>
+        </Directory>
       </Directory>
     </Directory>
 
-    <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="cmp_AddIn" Guid="*">
-        <File Id="fil_AddIn" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.AddIn.dll" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_Hook" Guid="*">
-        <File Id="fil_Hook" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.Hook.dll" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_VSTO" Guid="*">
-        <File Id="fil_VSTO" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.vsto" KeyPath="yes" />
-      </Component>
-      <Component Id="cmp_Config" Guid="*">
-        <File Id="fil_Config" Source="$(var.ProjectShamsi.TargetDir)\config.json" KeyPath="no" />
-      </Component>
-    </DirectoryRef>
-
-    <ComponentGroup Id="RegistryComponents" Directory="INSTALLFOLDER">
-      <Component Id="cmp_Reg" Guid="*">
-        <RegistryKey Root="HKLM" Key="Software\Microsoft\Office\MS Project\Addins\ProjectShamsi">
-          <RegistryValue Type="string" Name="FriendlyName" Value="Project Shamsi Calendar Add-in" KeyPath="no" />
-          <RegistryValue Type="string" Name="Description" Value="Convert all dates in MS Project 2019 to Jalali (Persian)" KeyPath="no" />
-          <RegistryValue Type="integer" Name="LoadBehavior" Value="3" KeyPath="no" />
-          <RegistryValue Type="string" Name="Manifest" Value="[INSTALLFOLDER]ProjectShamsi.vsto|vstolocal" KeyPath="yes" />
-        </RegistryKey>
-      </Component>
-    </ComponentGroup>
-
     <Feature Id="ProductFeature" Title="ProjectShamsi" Level="1">
-      <ComponentRef Id="cmp_AddIn" />
-      <ComponentRef Id="cmp_Hook" />
-      <ComponentRef Id="cmp_VSTO" />
-      <ComponentRef Id="cmp_Config" />
-      <ComponentGroupRef Id="RegistryComponents" />
+      <ComponentRef Id="MainExecutable" />
     </Feature>
 
-    <UIRef Id="WixUI_Minimal" />
+    <!-- اضافه کردن UI مینیمال -->
+    <UIRef Id="WixUI_Minimal"/>
+    <UIRef Id="WixUI_ErrorProgressText"/>
+
   </Product>
 </Wix>
