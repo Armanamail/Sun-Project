@@ -1,26 +1,49 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="ProjectShamsi" Language="1049" Version="1.0.0.0" Manufacturer="ShamsiSoft" UpgradeCode="PUT-GUID-HERE">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
-    <MediaTemplate />
+  <Product Id="*" Name="ProjectShamsi" Language="1033" Version="1.0.0.0" Manufacturer="Armana" UpgradeCode="{B0E4D2A7-CA6A-4A93-B9D8-AB67F8F05690}">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Comments="ProjectShamsi Installer"/>
+    <MediaTemplate EmbedCab="yes"/>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="ProjectShamsi" />
       </Directory>
     </Directory>
-    <Feature Id="ProductFeature" Title="ProjectShamsi" Level="1">
-      <ComponentGroupRef Id="ProductComponents" />
-    </Feature>
-  </Product>
 
-  <Fragment>
     <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="MainExecutable" Guid="*">
-        <File Source="$(var.ProjectShamsi.TargetPath)" KeyPath="yes" />
+      <Component Id="cmp_AddIn" Guid="*">
+        <File Id="fil_AddIn" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.AddIn.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_Hook" Guid="*">
+        <File Id="fil_Hook" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.Hook.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_VSTO" Guid="*">
+        <File Id="fil_VSTO" Source="$(var.ProjectShamsi.TargetDir)\ProjectShamsi.vsto" KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_Config" Guid="*">
+        <File Id="fil_Config" Source="$(var.ProjectShamsi.TargetDir)\config.json" KeyPath="no" />
       </Component>
     </DirectoryRef>
-    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-      <ComponentRef Id="MainExecutable" />
+
+    <ComponentGroup Id="RegistryComponents" Directory="INSTALLFOLDER">
+      <Component Id="cmp_Reg" Guid="*">
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\Office\MS Project\Addins\ProjectShamsi">
+          <RegistryValue Type="string" Name="FriendlyName" Value="Project Shamsi Calendar Add-in" KeyPath="no" />
+          <RegistryValue Type="string" Name="Description" Value="Convert all dates in MS Project 2019 to Jalali (Persian)" KeyPath="no" />
+          <RegistryValue Type="integer" Name="LoadBehavior" Value="3" KeyPath="no" />
+          <RegistryValue Type="string" Name="Manifest" Value="[INSTALLFOLDER]ProjectShamsi.vsto|vstolocal" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
     </ComponentGroup>
-  </Fragment>
+
+    <Feature Id="ProductFeature" Title="ProjectShamsi" Level="1">
+      <ComponentRef Id="cmp_AddIn" />
+      <ComponentRef Id="cmp_Hook" />
+      <ComponentRef Id="cmp_VSTO" />
+      <ComponentRef Id="cmp_Config" />
+      <ComponentGroupRef Id="RegistryComponents" />
+    </Feature>
+
+    <UIRef Id="WixUI_Minimal" />
+  </Product>
 </Wix>
