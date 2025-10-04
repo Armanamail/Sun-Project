@@ -1,44 +1,37 @@
-name: Build Add-in, ZIP and MSI
+name: Build and Release MSI
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v1.3.1
 
-      - name: Install WiX Toolset
-        run: choco install wixtoolset -y
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.1.1
 
       - name: Restore NuGet packages
-        run: dotnet restore ProjectShamsi.sln
+        run: nuget restore src/ProjectShamsi.sln
 
-      - name: Build solution
-        run: msbuild ProjectShamsi.sln /p:Configuration=Release
+      - name: Build ProjectShamsi
+        run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
 
-      - name: Prepare artifact dir
-        run: if (!(Test-Path artifact)) { New-Item -ItemType Directory -Path artifact }
-
-      - name: Package bin zip
+      - name: Build Installer
         run: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          [IO.Compression.ZipFile]::CreateFromDirectory('src/ProjectShamsi/bin/Release/net48', 'artifact/ProjectShamsi-bin.zip')
+          mkdir artifact
+          candle.exe -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release\net48"
+          light.exe -out artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
 
-      - name: Build MSI (WiX)
-        run: |
-          & candle.exe -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release\net48"
-          & light.exe -ext WixUIExtension -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload MSI Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ProjectShamsi-artifacts
-          path: artifact/
+          name: ProjectShamsi-Installer
+          path: artifact/ProjectShamsi.msi
