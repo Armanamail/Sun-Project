@@ -23,14 +23,11 @@ jobs:
     - name: Restore NuGet packages
       run: dotnet restore src/ProjectShamsi.sln
 
-    - name: Build Solution
-      run: msbuild src/ProjectShamsi.sln /p:Configuration=Release
-
-    - name: List all files after build
-      run: ls -R
+    - name: Build Solution and Installer
+      run: msbuild installer/ProjectShamsi.Setup/ProjectShamsi.Setup.wixproj /p:Configuration=Release
 
     - name: Upload MSI artifact
       uses: actions/upload-artifact@v4
       with:
         name: ProjectShamsi-Installer
-        path: src/ProjectShamsi.Setup/bin/Release/*.msi
+        path: installer/ProjectShamsi.Setup/bin/Release/*.msi
