@@ -36,8 +36,8 @@ jobs:
         env:
           WIX: 'C:\Program Files (x86)\WiX Toolset v3.11\bin'
         run: |
-          "%WIX%\candle.exe" -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release"
-          "%WIX%\light.exe" -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
+          & "%WIX%\candle.exe" -o artifact/ProjectShamsi.wixobj installer/Product.wxs -d"ProjectShamsi.TargetDir=src\ProjectShamsi\bin\Release"
+          & "%WIX%\light.exe" -o artifact/ProjectShamsi.msi artifact/ProjectShamsi.wixobj
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
